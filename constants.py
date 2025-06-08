@@ -1,0 +1,4 @@
+DATA_PATH = 'RawData/weather_data.csv'
+DEFAULT_CITY = 'Los Angeles'
+START_PORTION = 41253
+END_PORTION = 45253
