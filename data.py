@@ -18,6 +18,7 @@ class Data:
         self.processed_data = self.processed_data[[city, self.datetime_column]]
         self.processed_data_city = city
         self.processed_data_info['city'] = city
+        return self.processed_data
 
 
     def isolate_portion(self, start_portion = START_PORTION, end_portion = END_PORTION):
@@ -26,5 +27,10 @@ class Data:
         self.processed_data = self.processed_data.loc[start_portion: end_portion].reset_index(drop=True)
         self.processed_data_info['start'] = start_portion
         self.processed_data_info['end'] = end_portion
-        
-    
+        return self.processed_data
+
+    def prepare_for_nixtla(self):
+        self.processed_data['unique_id'] = 0
+        self.processed_data = self.processed_data.rename(columns={self.processed_data_city : 'y'})
+        return self.processed_data
+
