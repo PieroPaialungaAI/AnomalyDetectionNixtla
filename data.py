@@ -31,6 +31,6 @@ class Data:
 
     def prepare_for_nixtla(self):
         self.processed_data['unique_id'] = 0
-        self.processed_data = self.processed_data.rename(columns={self.processed_data_city : 'y'})
+        self.processed_data = self.processed_data.rename(columns={self.processed_data_city : 'y', self.datetime_column: 'ds'})
         return self.processed_data
 
