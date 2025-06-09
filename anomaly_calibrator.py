@@ -24,10 +24,7 @@ class AnomalyCalibrator:
             threshold=threshold,
             window=window
         )
-        return self.anomalous_signal
-
-    def plot(self):
-        plot_normal_and_anomalous_signal(self.original_signal, self.anomalous_signal)
+        return {'anomalous_signal': self.anomalous_signal, 'normal_signal': self.input_signal}
 
 
     def load_nixtla_client(self, nixtla_client = None):
@@ -49,7 +46,19 @@ class AnomalyCalibrator:
     def build_anomalous_dataset(self, min_location = DEFAULT_MIN_LOCATION, max_location = DEFAULT_MAX_LOCATION,
                                 num_location = DEFAULT_NUM_LOCATION):
         if self.all_possible_locations is None:
-            self.build_possible_locations(self, min_location, max_location, num_location)
+            self.build_possible_locations(min_location, max_location, num_location)
+        self.anomaly_dataset = np.zeros((len(self.possible_locations),self.n))
+        i = 0
         for location in self.possible_locations:
-            self.inject_anomaly(location = location, threshold = self.curr_threshold)
+            self.anomaly_dataset[i] = self.inject_anomaly(location = location, threshold = self.curr_threshold)['anomalous_signal']
+            i += 1 
+
+
+    def plot_anomalous_dataset(self):
+        plt.figure(figsize = (10,5))
+        for i in range(len(self.anomaly_dataset)):
+            plt.plot(self.anomaly_dataset[i])
+        plt.xlabel('Time (h)')
+        plt.ylabel('Temperature (K)')
+        plt.show()
 
