@@ -90,23 +90,19 @@ class AnomalyCalibrator:
             location = self.anomaly_dict[key]['location']
             dt_location = self.input_data.loc[location]['ds']
             res = self.run_anomaly_detection(anomalous_signal)
-            anomaly_bool = res[res['ds'] == dt_location].loc['anomaly']
-            self.print_anomaly_statement(anomaly_bool = anomaly_bool, key = key, location = location)
-            if anomaly_bool is True:
+            anomaly_bool = np.array(res[res['ds'] == dt_location]['anomaly'])[0].copy()
+            if anomaly_bool == True:
                 count_anomalies += 1 
+                str_output = f'Running TimeGPT for signal number {key+1}, with location {location}, and size {self.curr_threshold}'
+                print(str_output)
+                print('The anomaly has been detected')
         logger.setLevel(previous_level)  # Restore original level
-        return count_anomalies/len(self.anomaly_dict)
+        accuracy = count_anomalies/len(self.anomaly_dict)
+        print(f'The accuracy for size {self.curr_threshold} is {accuracy}')
+        return accuracy
+    
+    
             
     
-    def print_anomaly_statement(self, anomaly_bool, key, location):
-        print('####################')
-        str_output = f'Running TimeGPT for signal number {key+1}, with location {location}, and size {self.curr_threshold}'
-        if anomaly_bool is True:
-            count_anomalies += 1 
-            print('The anomaly is detected')
-        else:
-            print('The anomaly is not detected')
-        print(str_output)
-        print('####################')
 
 
