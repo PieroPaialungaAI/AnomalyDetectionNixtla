@@ -114,7 +114,7 @@ class AnomalyCalibrator:
             self.accuracy_dict[self.curr_threshold] = accuracy
             if accuracy < desired_accuracy:
                 print(f'The accuracy for size {self.curr_threshold} is {accuracy}, which is smaller than the desired accuracy {desired_accuracy}')
-                print(f'The minimum detectable anomaly is {self.curr_threshold}')
+                print(f'The minimum detectable anomaly is {self.curr_threshold+self.step_threshold}')
             self.curr_threshold -= self.step_threshold
             self.curr_threshold = np.round(self.curr_threshold,2)
             if self.curr_threshold <= 0:
