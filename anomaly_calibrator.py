@@ -7,6 +7,8 @@ import pandas as pd
 from dotenv import load_dotenv
 from nixtla import NixtlaClient
 import os
+import logging
+
 
 class AnomalyCalibrator:
     def __init__(self, processed_data, largest_threshold_size = 0.1, step_threshold = 0.001):
@@ -45,8 +47,7 @@ class AnomalyCalibrator:
 
     def build_anomalous_dataset(self, min_location = DEFAULT_MIN_LOCATION, max_location = DEFAULT_MAX_LOCATION,
                                 num_location = DEFAULT_NUM_LOCATION):
-        if self.all_possible_locations is None:
-            self.build_possible_locations(min_location, max_location, num_location)
+        self.build_possible_locations(min_location, max_location, num_location)
         self.anomaly_dataset = np.zeros((len(self.possible_locations),self.n))
         i = 0
         self.anomaly_dict = {}
@@ -78,4 +79,34 @@ class AnomalyCalibrator:
         return self.anomaly_result
     
 
-    def calibration_loop(self)
+    def calibration_run(self, number_of_runs = 5):
+        logger = logging.getLogger("nixtla.nixtla_client")
+        previous_level = logger.level
+        logger.setLevel(logging.WARNING)  # Suppress INFO logs temporarily
+        self.build_anomalous_dataset(num_location = number_of_runs)
+        count_anomalies = 0
+        for key in self.anomaly_dict:
+            anomalous_signal = self.anomaly_dict[key]['signal']
+            location = self.anomaly_dict[key]['location']
+            dt_location = self.input_data.loc[location]['ds']
+            res = self.run_anomaly_detection(anomalous_signal)
+            anomaly_bool = res[res['ds'] == dt_location].loc['anomaly']
+            self.print_anomaly_statement(anomaly_bool = anomaly_bool, key = key, location = location)
+            if anomaly_bool is True:
+                count_anomalies += 1 
+        logger.setLevel(previous_level)  # Restore original level
+        return count_anomalies/len(self.anomaly_dict)
+            
+    
+    def print_anomaly_statement(self, anomaly_bool, key, location):
+        print('####################')
+        str_output = f'Running TimeGPT for signal number {key+1}, with location {location}, and size {self.curr_threshold}'
+        if anomaly_bool is True:
+            count_anomalies += 1 
+            print('The anomaly is detected')
+        else:
+            print('The anomaly is not detected')
+        print(str_output)
+        print('####################')
+
+
