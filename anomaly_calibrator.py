@@ -49,8 +49,13 @@ class AnomalyCalibrator:
             self.build_possible_locations(min_location, max_location, num_location)
         self.anomaly_dataset = np.zeros((len(self.possible_locations),self.n))
         i = 0
+        self.anomaly_dict = {}
         for location in self.possible_locations:
-            self.anomaly_dataset[i] = self.inject_anomaly(location = location, threshold = self.curr_threshold)['anomalous_signal']
+            anomalous_signal = self.inject_anomaly(location = location, threshold = self.curr_threshold)['anomalous_signal']
+            self.anomaly_dict[i] = {}
+            self.anomaly_dict[i]['signal'] = anomalous_signal
+            self.anomaly_dict[i]['location'] = location
+            self.anomaly_dataset[i] = anomalous_signal
             i += 1 
 
 
@@ -71,3 +76,6 @@ class AnomalyCalibrator:
             model="timegpt-1",
         )
         return self.anomaly_result
+    
+
+    def calibration_loop(self)
