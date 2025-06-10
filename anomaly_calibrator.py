@@ -11,7 +11,7 @@ import logging
 
 
 class AnomalyCalibrator:
-    def __init__(self, processed_data, largest_threshold_size = 0.1, step_threshold = 0.001):
+    def __init__(self, processed_data, largest_threshold_size = 0.1, step_threshold = 0.01):
         self.input_data = processed_data
         self.input_signal = np.array(processed_data['y']).copy()
         self.n = len(self.input_signal)
@@ -79,7 +79,7 @@ class AnomalyCalibrator:
         return self.anomaly_result
     
 
-    def calibration_run(self, number_of_runs = 5):
+    def calibration_run(self, number_of_runs = 5, print_statement = True):
         logger = logging.getLogger("nixtla.nixtla_client")
         previous_level = logger.level
         logger.setLevel(logging.WARNING)  # Suppress INFO logs temporarily
@@ -93,15 +93,33 @@ class AnomalyCalibrator:
             anomaly_bool = np.array(res[res['ds'] == dt_location]['anomaly'])[0].copy()
             if anomaly_bool == True:
                 count_anomalies += 1 
-                str_output = f'Running TimeGPT for signal number {key+1}, with location {location}, and size {self.curr_threshold}'
-                print(str_output)
-                print('The anomaly has been detected')
+                if print_statement  == True:
+                    str_output = f'Running TimeGPT for signal number {key+1}, with location {location}, and size {self.curr_threshold}'
+                    print(str_output)
+                    print('The anomaly has been detected')
         logger.setLevel(previous_level)  # Restore original level
         accuracy = count_anomalies/len(self.anomaly_dict)
         print(f'The accuracy for size {self.curr_threshold} is {accuracy}')
         return accuracy
     
-    
+
+    def calibration_loop(self, number_of_runs = 10, desired_accuracy = 0.5):
+        logger = logging.getLogger("nixtla.nixtla_client")
+        previous_level = logger.level
+        logger.setLevel(logging.WARNING)  # Suppress INFO logs temporarily
+        accuracy = None
+        self.accuracy_dict = {}
+        while accuracy is None or accuracy > desired_accuracy:
+            accuracy = self.calibration_run(number_of_runs = number_of_runs, print_statement = False)
+            self.accuracy_dict[self.curr_threshold] = accuracy
+            if accuracy < desired_accuracy:
+                print(f'The accuracy for size {self.curr_threshold} is {accuracy}, which is smaller than the desired accuracy {desired_accuracy}')
+                print(f'The minimum detectable anomaly is {self.curr_threshold}')
+            self.curr_threshold -= self.step_threshold
+            self.curr_threshold = np.round(self.curr_threshold,2)
+            if self.curr_threshold <= 0:
+                break
+        return self.accuracy_dict
             
     
 
