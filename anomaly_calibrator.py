@@ -62,3 +62,12 @@ class AnomalyCalibrator:
         plt.ylabel('Temperature (K)')
         plt.show()
 
+
+    def run_anomaly_detection(self,anomalous_signal, freq = 'H'):
+        self.anomaly_data = self.input_data.copy()
+        self.anomaly_data['y'] = anomalous_signal
+        self.anomaly_result = self.nixtla_client.detect_anomalies(self.anomaly_data,
+            freq=freq,
+            model="timegpt-1",
+        )
+        return self.anomaly_result
