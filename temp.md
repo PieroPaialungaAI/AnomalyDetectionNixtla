@@ -239,14 +239,14 @@ Now we need to load Nixtla's API. To do that, make sure you have an API key. Fol
 ```bash
 export NIXTLA_API_KEY = "your_api_key"
 ```
-Once you followed the steps, you can easily import your Nixtla Client using:
+Once you’ve followed the steps, you can easily import your Nixtla client using:
 
 
 ```python
 anomaly_calibrator.load_nixtla_client()
 ```
 
-Now, a very simple test that the algorithm is working can be done by running the following code:
+So let's take this for a spin. Let's see how the Nixtla's anomaly detection algorithm performs for ```location = 800``` and ```size = 0.05```. 
 
 
 ```python
@@ -297,10 +297,7 @@ anomaly_result[anomaly_result['ds'] == ds_anomaly]
 </table>
 </div>
 
-
-
-As we can see, the model is able to correctly spot the location where we injected the anomaly. Even visually, we can see how the model is able to clearly detect the anomaly.
-
+As we can see, the model correctly identifies the location where the anomaly was injected. Even visually, it's clear that the model successfully detects the anomaly.
 
 ```python
 anomaly_calibrator.plot_anomaly_detection()
@@ -310,6 +307,7 @@ anomaly_calibrator.plot_anomaly_detection()
     
 ![png](temp_files/temp_30_0.png)
     
+This is very promising, considering that the injected anomaly is only 5% of the average value of the time series.
 
 
 #### Single Run
