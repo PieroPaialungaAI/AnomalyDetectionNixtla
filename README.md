@@ -3,7 +3,7 @@
 Let’s say you have a time series and an anomaly detection algorithm to detect anomalies. If you have a labeled dataset, the performance of your anomaly detection algorithm can be measured using metrics like precision, recall, or F1-score. But what if your dataset doesn't include any labels, meaning you don't know where the anomalies are? How do you measure performance then?
 
 ## Synthetic Anomalies Detection
-A way to assess the performance of your method is to manually inject **synthetic anomalies** (1) into your time series, as shown in the image below:
+A way to assess the performance of your method is to manually inject **synthetic anomalies** into your time series. Anomalies can take many different forms. Throughout this article, we considered an anomaly to be a localized **spike** in the input time series, as shown in the image below:
 
 ![Anomaly Example](notebook_images/anomaly_injection.png)
 
@@ -11,12 +11,7 @@ A successful outcome of the anomaly detection algorithm is shown in the followin
 
 ![Anomaly Example](notebook_images/anomaly_detection_output.png)
 
-Of course, an unsuccessful outcome would be when the anomaly detector fails to identify the injected anomaly.
-
-**These synthetic anomalies can be used to build a labeled dataset, as we now have full control over where the "true" anomalies occur.**
-***
-(1). Please note, an anomaly can configure in many different ways. Throughout this article, the anomaly is considered as a localized **spike** in the input time series. 
-*** 
+Of course, an unsuccessful outcome would be when the anomaly detector fails to identify the injected anomaly. Because now we have a clear definition of what counts as successful or unsuccessful detection, **these synthetic anomalies can be used to build a labeled dataset, as we now have full control over where the "true" anomalies occur.**
 
 ## Synthetic Anomalies Parameters
 
