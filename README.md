@@ -57,15 +57,15 @@ The question we want to ask ourself is the following:
 
 ### Evaluation Algorithm
 
-The evaluation algorithm to detect the smallest detectable anomaly, which we are going to define as the **minimum detectable anomaly**,is the following:
+The evaluation algorithm to detect the smallest detectable anomaly, which we are going to define as the **minimum detectable anomaly**, is the following:
 1. We fix the largest **size** of the anomaly (e.g. size = 0.1 $\times$ the average of the time series). 
-2. We inject the anomaly, using the same size, at multiple locations in the time series.
-3. For each time series with an injected anomaly, we run the anomaly detection algorithm and check whether the anomaly at the injected location is detected.
-4. We measure performance across all locations using a metric such as: 
+2. We inject the anomaly, using the same size, at **multiple locations** in the time series.
+3. For each time series with an injected anomaly, we **run the anomaly detection algorithm** and check whether the anomaly at the injected location is detected.
+4. We **measure performance** across all locations using a metric such as: 
 $$\text{Accuracy} = \frac{\text{Number of detected anomalies}}{\text{Number of anomalies}}$$
-5. If the accuracy is satisfactory, we can reduce the size of the anomaly and repeat from step 2. If not, we interrupt the loop. 
+5. *If* the accuracy is satisfactory, we can reduce the size of the anomaly and repeat from step 2. *If not*, we interrupt the loop. 
 
-A visual representation of this workflow can be seen in the following flowchart.
+A visual representation of this algorithm can be seen in the following flowchart:
 
 ![Flowchart](notebook_images/workflow.png)
 
@@ -73,13 +73,11 @@ At the end of this loop, the smallest size that yields satisfactory accuracy wil
 
 ## Performance Evaluation's Code
 
-We are going to run the Performance Evaluation's algorithm described above on a real world dataset. The dataset and all the code that you need to run this example can be found in this [GitHub folder](https://github.com/PieroPaialungaAI/AnomalyDetectionNixtla), which you can clone using:
+We are going to implement the Performance Evaluation's algorithm described above on a real world dataset. The dataset and all the scripts that you need to run the code below can be found in this [GitHub folder](https://github.com/PieroPaialungaAI/AnomalyDetectionNixtla), which you can clone using:
 
 ```bash
 git clone https://github.com/PieroPaialungaAI/AnomalyDetectionNixtla.git
 ```
-
-
 
 ### Data
 
