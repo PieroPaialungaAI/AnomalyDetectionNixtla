@@ -197,7 +197,7 @@ preprocessed_data.head()
 This is the ```preprocessed_data``` that we will use for the rest of the blogpost. 
 
 ### Anomaly Calibrator
-Everything related to anomaly injection and detection is implemented in the ```AnomalyCalibrator``` class. We will use the built-in functions from that object to explain the process. The input of ```AnomalyCalibrator``` is the ```preprocessed_data``` object from the ```Data``` class:
+Everything related to anomaly injection and detection is implemented in the ```AnomalyCalibrator``` class. Its input is the ```preprocessed_data``` object, which is the result of the data processing steps from the ```Data``` class described above:
 
 ```python
 from anomaly_calibrator import *
@@ -205,7 +205,7 @@ anomaly_calibrator = AnomalyCalibrator(processed_data = preprocessed_data)
 ```
 
 #### Anomaly Injector
-The function to inject an anomaly allows us to place the anomaly wherever we like. For example, we can inject an anomaly at location = 300 with size = 0.1 ($\times$ the time series average in a small window around location = 300) using the following line of code:
+The ```inject_anomaly``` function allows us to place a whatever big anomaly (```threshold```) wherever we like (```location```). For example, we can inject an anomaly at location = 300 with size = 0.1 ($\times$ the time series average in a small window around location = 300) using the following line of code:
 
 ```python
 anomaly_data = anomaly_calibrator.inject_anomaly(location = 300, threshold = 0.1)
@@ -230,7 +230,7 @@ anomaly_calibrator.plot_anomalous_dataset()
 ![png](temp_files/temp_24_0.png)
     
 #### Anomaly Detection Inference
-Now we need to load Nixtla's API. To do that, make sure you have an API key. Follow the instructions[here](https://www.nixtla.io/docs/getting-started-setting_up_your_api_key). Once you have your API Key, store it in your system using:
+Now we need to load Nixtla's API. To do that, make sure you have an API key. Follow the instructions [here](https://www.nixtla.io/docs/getting-started-setting_up_your_api_key). Once you have your API Key, store it in your system using:
 ```bash
 export NIXTLA_API_KEY = "your_api_key"
 ```
@@ -241,7 +241,7 @@ Once you’ve followed the steps, you can easily import your Nixtla client using
 anomaly_calibrator.load_nixtla_client()
 ```
 
-So let's take this for a spin. Let's see how the Nixtla's anomaly detection algorithm performs for ```location = 800``` and ```size = 0.05```. 
+Let's take the anomaly detection out for a spin. For example, let's see how the algorithm performs for ```location = 800``` and ```size = 0.05```. 
 
 
 ```python
@@ -292,7 +292,7 @@ anomaly_result[anomaly_result['ds'] == ds_anomaly]
 </table>
 </div>
 
-As we can see, the model correctly identifies the location where the anomaly was injected. Even visually, it's clear that the model successfully detects the anomaly.
+As we can see, the anomaly detection model correctly identifies the location where the anomaly was injected. Even visually, it's clear that the model successfully detects the anomaly, as shwon below:
 
 ```python
 anomaly_calibrator.plot_anomaly_detection()
@@ -302,12 +302,12 @@ anomaly_calibrator.plot_anomaly_detection()
     
 ![png](temp_files/temp_30_0.png)
     
-This is very promising, considering that the injected anomaly is only 5% of the average value of the time series.
+This is very promising, considering that the injected anomaly is only 5% (0.05) of the average value of the time series.
 
 
 #### Fixed Size Loop
 
-Now, given a fixed anomaly ```size```, we can use the calibration_run function to evaluate overall detection accuracy. This function injects the same anomaly size at multiple random ```locations``` across the time series, runs the anomaly detection model for each case, and then calculates the global accuracy based on how many of the injected anomalies were correctly detected.
+Now, given a fixed anomaly ```size```, we can use the ```calibration_run``` function to evaluate overall detection accuracy. This function injects the same anomaly size at multiple random ```locations``` across the time series, runs the anomaly detection model for each case, and then calculates the global accuracy based on how many of the injected anomalies were correctly detected.
 
 
 ```python
@@ -326,11 +326,11 @@ anomaly_calibrator.calibration_run()
     The anomaly has been detected
     The accuracy for size 0.1 is 1.0
 
-Amazing! So for an anomaly size of 0.1, TimeGPT performs extremely well. The next step is to run a full evaluation loop, where we gradually reduce the anomaly size to determine the smallest size that the model can reliably detect. Let’s work on that.
+Amazing! So for an anomaly size of 0.1 (which is again 0.1 $\times$ the average of the time series), TimeGPT has a perfect accuracy. The next step is to run a full evaluation loop, where we gradually reduce the anomaly size to determine the smallest size that the model can reliably detect (**minimum detectable anomaly**). Let’s work on that.
 
 #### Full Evaluation Loop
-The following code runs the full loop described in the "Evaluation Algorithm" section.
-To execute the algorithm, we need to specify a desired accuracy, which is the minimum accuracy we want to achieve. For example, we can say that the algorithm is satisfactory as soon as it is better than flipping a coin. This would mean a desired accuracy of 0.5. If we fix this value, we obtain the following result.
+The following code runs the full loop described in the ***"Evaluation Algorithm"*** section.
+To execute the algorithm, we need to specify a desired accuracy, which is the minimum accuracy we want to achieve. For example, we can say that the algorithm is "satisfactory" as soon as it is better than flipping a coin. This would mean a desired accuracy of 0.5. If we fix this value, we obtain the following result.
 
 
 ```python
@@ -353,7 +353,9 @@ calibration_dict = anomaly_calibrator.calibration_loop(number_of_runs = 20, desi
 
 The results here are quite impressive: for a very small anomaly (2% of the average value of the time series), we still achieve an accuracy of 0.8, well above our desired threshold.
 
-We can run the full loop again, this time starting with a smaller size size = 0.02 and being even more precise in determining our **minimum detectable anomaly**:
+Nonetheless, 0.8 is still more than the desired accuracy, so the minimum detectable anomaly is even smaller than size = 0.2.
+
+If we run the full loop again, this time starting with a smaller size size = 0.02, we will be even more precise in determining our **minimum detectable anomaly**, as shown below:
 
 ```python
 from anomaly_calibrator import AnomalyCalibrator
@@ -371,7 +373,7 @@ refinement_calibration_dict = anomaly_calibrator.calibration_loop(number_of_runs
     The minimum detectable anomaly is 0.017
 
 
-So, by refining our evaluation, we find that the minimum detectable anomaly is 0.017.
+So, by refining our evaluation, we find that the minimum detectable anomaly, for desired accuracy = 0.5, is around 0.017.
 
 ## Conclusions
 
