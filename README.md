@@ -135,9 +135,11 @@ data.raw_data[['Denver', 'datetime']].tail()
 
 #### Data Preprocessing 
 Multiple preprocessing steps are now applied: 
-1. We only deal with one time series, so we can pick the city. The default city is ```Phoenix``` (for no good reason, feel free to pick whatever city you like)
-2. The time series is pretty long, so we isolate a portion of the time series to reduce time and power complexity. The default portion is between ```index = 41253``` and  ```index = 45253```. Again, feel free to change this however you'd like. Keep in mind that the full time series has length ```l = 45253``` (so don't exceed the boundaries)
-3. In order to run our ```TimeGPT-1``` model on ```Nixtla```, we rename the datetime columns to ```ds``` and the timeseries amplitude to ```y```.
+1. We only deal with one time series, so we can pick the city. The default city (selected throughout the blog post) is ```Phoenix```, but the ```isolate_city(city)``` allows you to pick whatever city you like.
+2. The time series is pretty long, so we isolate a portion of the time series to reduce time and power complexity. The default portion is between ```index = 41253``` and  ```index = 45253```. Again, feel free to change this however you'd like using the ```isolate_portion(start,end)``` function. Keep in mind that the full time series has length ```l = 45253``` (so don't exceed the boundaries)
+3. In order to run our ```TimeGPT-1``` model on ```Nixtla```, the last preprocessing step is to rename the datetime columns to ```ds``` and the timeseries amplitude to ```y```. 
+
+The entire data preprocessing pipeline can be run using the following block of code:
 
 
 ```python
