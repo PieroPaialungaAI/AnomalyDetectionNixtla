@@ -26,6 +26,7 @@ class AnomalyCalibrator:
             threshold=threshold,
             window=window
         )
+        self.location_anomaly = location
         return {'anomalous_signal': self.anomalous_signal, 'normal_signal': self.input_signal}
 
 
@@ -58,15 +59,6 @@ class AnomalyCalibrator:
             self.anomaly_dict[i]['location'] = location
             self.anomaly_dataset[i] = anomalous_signal
             i += 1 
-
-
-    def plot_anomalous_dataset(self):
-        plt.figure(figsize = (10,5))
-        for i in range(len(self.anomaly_dataset)):
-            plt.plot(self.anomaly_dataset[i])
-        plt.xlabel('Time (h)')
-        plt.ylabel('Temperature (K)')
-        plt.show()
 
 
     def run_anomaly_detection(self,anomalous_signal, freq = 'H'):
@@ -116,11 +108,26 @@ class AnomalyCalibrator:
                 print(f'The accuracy for size {self.curr_threshold} is {accuracy}, which is smaller than the desired accuracy {desired_accuracy}')
                 print(f'The minimum detectable anomaly is {self.curr_threshold+self.step_threshold}')
             self.curr_threshold -= self.step_threshold
-            self.curr_threshold = np.round(self.curr_threshold,2)
+            self.curr_threshold = np.round(self.curr_threshold,3)
             if self.curr_threshold <= 0:
                 break
         return self.accuracy_dict
             
+
+    def plot_anomalous_dataset(self):
+        plt.figure(figsize = (10,5))
+        for i in range(len(self.anomaly_dataset)):
+            plt.plot(self.anomaly_dataset[i])
+        plt.xlabel('Time (h)')
+        plt.ylabel('Temperature (K)')
+        plt.show()
+
+
+    def plot_anomaly_detection(self,location = None):
+        if location is None:
+            location = self.location_anomaly
+        ds_anomaly = self.input_data['ds'].loc[location]
+        plot_timegpt_anomalies(self.anomaly_result, ds_anomaly)
     
 
 
