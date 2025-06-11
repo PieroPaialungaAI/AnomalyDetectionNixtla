@@ -333,7 +333,7 @@ anomaly_calibrator.calibration_run()
 
 Amazing! So for an anomaly size of 0.1, TimeGPT performs extremely well. The next step is to run a full evaluation loop, where we gradually reduce the anomaly size to determine the smallest size that the model can reliably detect. Let’s work on that.
 
-#### Full Evaluation Loop
+#### Full Evaluation Loop
 The following code runs the full loop described in the "Evaluation Algorithm" section.
 To execute the algorithm, we need to specify a desired accuracy, which is the minimum accuracy we want to achieve. For example, we can say that the algorithm is satisfactory as soon as it is better than flipping a coin. This would mean a desired accuracy of 0.5. If we fix this value, we obtain the following result.
 
