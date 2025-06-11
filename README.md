@@ -11,20 +11,20 @@ A successful outcome of the anomaly detection algorithm is shown in the followin
 
 ![Anomaly Example](notebook_images/anomaly_detection_output.png)
 
-Of course, an unsuccessful outcome would be when the anomaly detector fails to identify the injected anomaly. Because now we have a clear definition of what counts as successful or unsuccessful detection, **these synthetic anomalies can be used to build a labeled dataset, as we now have full control over where the "true" anomalies occur.**
+Of course, an unsuccessful outcome would be when the anomaly detector fails to identify the injected anomaly. Because now we have a clear definition of what counts as successful or unsuccessful detection, **these synthetic anomalies can be used to build a labeled dataset.**
 
 ## Synthetic Anomalies Parameters
 
 In the setup of synthetic anomalies, multiple **parameters** can influence anomaly detection:
 
 1. The **kind** of injected anomalies: what do our injected anomalies look like?
-2. The specific **anomaly detection algorithm** we are adopting.
+2. The specific **anomaly detection algorithm** we are adopting: how are we detecting the anomalies?
 3. The **size** of our anomalies: how "big" do we assume our anomalies to be?
-4. The **location** of our anomalies in the time series.
+4. The **location** of our anomalies in the time series: where is the anomaly in the time series?
 
 ### Fixed parameters
 
-The first two parameters (**kind** and **anomaly detection algorithm**) are fixed in this blogpost.
+The first two parameters (**kind** and **anomaly detection algorithm**) are fixed in this blogpost. 
 
 #### Kind of Anomaly
 
@@ -32,11 +32,11 @@ As stated earlier, a reasonable assumption for the **"kind"** of anomaly is a lo
 
 #### Anomaly Detection Algorithm
 
-The **anomaly detection algorithm** that we will be testing is the ```TimeGPT-1``` model, developed by the [Nixtla](https://www.nixtla.io/) team. The idea is to use the **transformer** algorithm and conformal probabilities to get accurate predictions and uncertainty boundaries. You can read more about it in the original [paper](https://arxiv.org/abs/2310.03589), while another application of anomaly detection throught TimeGPT-1 can be found in this [blogpost](https://www.nixtla.io/blog/anomaly-detection-in-time-series-with-timegpt-and-python).
+The **anomaly detection algorithm** that we will be testing is the ```TimeGPT-1``` model, developed by the [Nixtla](https://www.nixtla.io/) team. The idea behind TimeGPT-1 is to use the **transformer** algorithm and conformal probabilities to get accurate predictions and uncertainty boundaries. You can read more about it in the original [paper](https://arxiv.org/abs/2310.03589), while another application of anomaly detection throught TimeGPT-1 can be found in this [blogpost](https://www.nixtla.io/blog/anomaly-detection-in-time-series-with-timegpt-and-python).
 
 
 ### Non Fixed Parameters/Variables
-The **size** and **location** parameters are not fixed and will be considered as variables. An image showing injected anomalies at varying sizes and locations can be seen in the image below:
+The **size** and **location** parameters are not fixed and will be considered as **variables**. An visual representation of injected anomalies at varying sizes and locations can be seen below:
 
 
 ![table_first](notebook_images/table_first.png)
@@ -57,7 +57,7 @@ The question we want to ask ourself is the following:
 
 ### Evaluation Algorithm
 
-The evaluation algorithm to detect the smallest detectable anomaly, which we are going to define as the **minimum detectable anomaly** is the following:
+The evaluation algorithm to detect the smallest detectable anomaly, which we are going to define as the **minimum detectable anomaly**,is the following:
 1. We fix the largest **size** of the anomaly (e.g. size = 0.1 $\times$ the average of the time series). 
 2. We inject the anomaly, using the same size, at multiple locations in the time series.
 3. For each time series with an injected anomaly, we run the anomaly detection algorithm and check whether the anomaly at the injected location is detected.
