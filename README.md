@@ -1,6 +1,6 @@
 # Anomaly Detection Performance Evaluation through Synthetic Anomalies
 
-Let’s say you have a time series and an anomaly detection algorithm to detect anomalies. If you have a labeled dataset, the performance of your anomaly detection algorithm can be measured using metrics like precision, recall, or F1-score. But what if it’s not labeled?
+Let’s say you have a time series and an anomaly detection algorithm to detect anomalies. If you have a labeled dataset, the performance of your anomaly detection algorithm can be measured using metrics like precision, recall, or F1-score. But what if your dataset doesn't include any labels, meaning you don't know where the anomalies are? How do you measure performance then?
 
 ## Synthetic Anomalies Detection
 A way to assess the performance of your method is to manually inject **synthetic anomalies** (1) into your time series, as shown in the image below:
