@@ -310,9 +310,9 @@ anomaly_calibrator.plot_anomaly_detection()
 This is very promising, considering that the injected anomaly is only 5% of the average value of the time series.
 
 
-#### Single Run
+#### Fixed Size Loop
 
-Now, given a fixed threshold, we can see the accuracy for a given location through the ```calibration_run``` function.
+Now, given a fixed anomaly ```size```, we can use the calibration_run function to evaluate overall detection accuracy. This function injects the same anomaly size at multiple random ```locations``` across the time series, runs the anomaly detection model for each case, and then calculates the global accuracy based on how many of the injected anomalies were correctly detected.
 
 
 ```python
@@ -331,19 +331,11 @@ anomaly_calibrator.calibration_run()
     The anomaly has been detected
     The accuracy for size 0.1 is 1.0
 
+Amazing! So for an anomaly size of 0.1, TimeGPT performs extremely well. The next step is to run a full evaluation loop, where we gradually reduce the anomaly size to determine the smallest size that the model can reliably detect. Let’s work on that.
 
-
-
-
-    1.0
-
-
-
-Amazing! So for a size of an anomaly = 0.1, TimeGPT works extremely well. The full calibration loop is based on reducing the size of anomalies, so that we can see what is the minimum detectable size of anomaly. Let's work on it. 
-
-### Anomaly Detection Calibration Loop
-The following code makes you run the calibration loop described in the **"Anomaly Detection Performance Evaluation"** chapter. 
-In order for the algorithm to run we would need a desired accuracy (the minimum accuracy we want to achieve). 
+#### Full Evaluation Loop
+The following code runs the full loop described in the "Evaluation Algorithm" section.
+To execute the algorithm, we need to specify a desired accuracy, which is the minimum accuracy we want to achieve. For example, we can say that the algorithm is satisfactory as soon as it is better than flipping a coin. This would mean a desired accuracy of 0.5. If we fix this value, we obtain the following result.
 
 
 ```python
@@ -364,8 +356,9 @@ calibration_dict = anomaly_calibrator.calibration_loop(number_of_runs = 20, desi
     The minimum detectable anomaly is 0.02
 
 
-Now, as we can see, the minimum detectable anomaly is 0.02, but the accuracy there is still at 0.8. We can refine it by rerunning the calibration loop with a smaller starting size, as shown below:
+The results here are quite impressive: for a very small anomaly (2% of the average value of the time series), we still achieve an accuracy of 0.8, well above our desired threshold.
 
+We can run the full loop again, this time starting with a smaller size size = 0.02 and being even more precise in determining our **minimum detectable anomaly**:
 
 ```python
 from anomaly_calibrator import AnomalyCalibrator
@@ -383,4 +376,8 @@ refinement_calibration_dict = anomaly_calibrator.calibration_loop(number_of_runs
     The minimum detectable anomaly is 0.017
 
 
-So if we are being more precise, the minimum detectable anomaly is 0.17. 
+So, by refining our evaluation, we find that the minimum detectable anomaly is 0.017.
+
+## Conclusions
+
+In this article, we presented an effective method to evaluate the performance of anomaly detection algorithms when labeled data is not available using **synthetic anomalies**. By injecting synthetic anomalies (in the form of spikes) at random locations and systematically decreasing their size, we ran a loop that evaluates detection accuracy at each step. This process allowed us to determine the **minimum detectable anomaly**, which is the **smallest anomaly size that yields a pre-defined level of accuracy performance** for a real-world dataset using ```Nixtla’s TimeGPT-1``` model.
