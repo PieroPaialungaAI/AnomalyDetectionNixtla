@@ -31,7 +31,7 @@ In the setup of synthetic anomalies, multiple **parameters** can influence anoma
 
 The first two parameters (**kind** and **anomaly detection algorithm**) are fixed in this blogpost.
 
-#### Kind of Anomaly
+#### Kind of Anomaly
 
 As stated earlier, a reasonable assumption for the **"kind"** of anomaly is a localized **spike**. For example, in a weather dataset, where the amplitude (y-axis) represents temperature in Kelvin and the x-axis represents time in hours, the **spike** corresponds to a temperature that is significantly higher than average.
 
@@ -49,9 +49,6 @@ The **size** and **location** parameters are not fixed and will be considered as
 And the corresponding effect on the input time series is shown below:
 
 ![table_first](notebook_images/table_second.png)
-
-
-
 
 ## Performance Evaluation Method
 
@@ -146,8 +143,8 @@ data.raw_data[['Denver', 'datetime']].tail()
 #### Data Preprocessing 
 Multiple preprocessing steps are now applied: 
 1. We only deal with one time series, so we can pick the city. The default city is ```Phoenix``` (for no good reason, feel free to pick whatever city you like)
-2. The time series is pretty long, we can isolate a portion of the time series to reduce time and power complexity. The default portion is between ```index = 41253``` and  ```index = 45253```. Again, feel free to change this however you'd like. Keep in mind that the full time series has length ```l = 45253``` 
-3. In order to run our ```TimeGPT-1``` model on ```Nixtla```, we rename the datetime columns as ```ds``` and the timeseries amplitude as ```y```.
+2. The time series is pretty long, so we isolate a portion of the time series to reduce time and power complexity. The default portion is between ```index = 41253``` and  ```index = 45253```. Again, feel free to change this however you'd like. Keep in mind that the full time series has length ```l = 45253``` (so don't exceed the boundaries)
+3. In order to run our ```TimeGPT-1``` model on ```Nixtla```, we rename the datetime columns to ```ds``` and the timeseries amplitude to ```y```.
 
 
 ```python
@@ -202,22 +199,18 @@ preprocessed_data.head()
 </table>
 </div>
 
-
-
-So this is the ```preprocessed_data``` that we will use for the rest of the blogpost. Let's build the anomaly infrastructure now.
+This is the ```preprocessed_data``` that we will use for the rest of the blogpost. 
 
 ### Anomaly Calibrator
-Everything about anomalies injection and detection is implemented in the ```AnomalyCalibrator``` class. We will use the in-built functions from that object to explain the process. 
-
+Everything related to anomaly injection and detection is implemented in the ```AnomalyCalibrator``` class. We will use the built-in functions from that object to explain the process. The input of ```AnomalyCalibrator``` is the ```preprocessed_data``` object from the ```Data``` class:
 
 ```python
 from anomaly_calibrator import *
 anomaly_calibrator = AnomalyCalibrator(processed_data = preprocessed_data)
 ```
 
-### Anomaly Injector
-The function to inject anomaly allows us to put the anomaly wherever we like. For example, we can inject an anomaly at location = 300 with size = 0.1 ($\times$ the time series average in a small window around location = 300) with this line of code:
-
+#### Anomaly Injector
+The function to inject an anomaly allows us to place the anomaly wherever we like. For example, we can inject an anomaly at location = 300 with size = 0.1 ($\times$ the time series average in a small window around location = 300) using the following line of code:
 
 ```python
 anomaly_data = anomaly_calibrator.inject_anomaly(location = 300, threshold = 0.1)
@@ -229,8 +222,7 @@ plot_normal_and_anomalous_signal(anomaly_data['normal_signal'], anomaly_data['an
 ![png](temp_files/temp_22_0.png)
     
 
-
-For a fixed size of anomalies, we can generate ```num_location``` time series where the anomaly with the same fixed ```size``` is applied, for each time series, at a different location.
+For a fixed anomaly size, we can generate ```num_location``` time series, each with the same anomaly ```size``` injected at a different location.
 
 
 ```python
@@ -242,10 +234,8 @@ anomaly_calibrator.plot_anomalous_dataset()
     
 ![png](temp_files/temp_24_0.png)
     
-
-
-### Anomaly Detection Inference
-Now we have to load the Nixtla's API. In order to do that, make sure you have an API Key. Follow the instructions [here](https://www.nixtla.io/docs/getting-started-setting_up_your_api_key). Once you have your API Key, store it in your system using:
+#### Anomaly Detection Inference
+Now we need to load Nixtla's API. To do that, make sure you have an API key. Follow the instructions[here](https://www.nixtla.io/docs/getting-started-setting_up_your_api_key). Once you have your API Key, store it in your system using:
 ```bash
 export NIXTLA_API_KEY = "your_api_key"
 ```
@@ -322,7 +312,7 @@ anomaly_calibrator.plot_anomaly_detection()
     
 
 
-### Single Calibration Run
+#### Single Run
 
 Now, given a fixed threshold, we can see the accuracy for a given location through the ```calibration_run``` function.
 
